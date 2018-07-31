@@ -165,12 +165,18 @@ class MGApiUtils(MGApiLogging):
         options["v:{variable}".format(variable=variable)] = value
         return options
     # Time
-    def nowRFC2822(self, days=0, hours=0, minutes=0):
+    def nowRFC2822(self, days=0, hours=0, minutes=0, return_timestamp=False):
         timedelta_shift = datetime.timedelta(days=days, hours=hours, minutes=minutes)
         now_datetime = datetime.datetime.now() + timedelta_shift
         now_timestamp = time.mktime(now_datetime.timetuple())
         # localtime=True (Sets local timezone)
         result = utils.formatdate(now_timestamp, localtime=True)
+        self.print_debug("timedelta_shift:", timedelta_shift)
+        self.print_debug("now_datetime:", now_datetime)
+        self.print_debug("now_timestamp:", now_timestamp)
+        self.print_debug("result:", result)
+        if return_timestamp:
+            return result, now_timestamp
         return result
 # Unification of request responses
 class MGApiRequests(MGApiUtils):
@@ -314,6 +320,7 @@ class Api(MGApiRequests):
         deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_domains")
         return deserialized, serialized
 
+    # Supressions (method used by get_bounces, get_unsubscribes and get_complaints)
     def get_supressions(self, get_what, address="", domain="", limit=100, caller="<not_set>"):
         # Set default if invalid limit value
         if limit < 0 or limit > 10000: limit = 100;
@@ -327,8 +334,6 @@ class Api(MGApiRequests):
         reason, success, result = self.get(url, params=params)
         deserialized, serialized = self.parseResponse(reason, success, result, caller=caller)
         return deserialized, serialized
-
-
     # Bounces
     def get_bounces(self, address="", domain="", limit=100):
         """
@@ -425,6 +430,43 @@ class Api(MGApiRequests):
         }
         reason, success, result = self.post(url, data=data)
         deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.bulk_add_members")
+        return deserialized, serialized
+
+    # Events
+    def ret_events_filter_fields(self):
+        ret = {
+            "event": None,
+            "list": None,
+            "attachment": None,
+            "from": None,
+            "message-id": None,
+            "subject": None,
+            "to": None,
+            "size": None,
+            "recipient": None,
+            "tags": None,
+            "severity": None
+        }
+        return ret
+    def get_events(self, domain="", begin="", end="", ascending="yes", limit=300, filter_fields={}):
+        """
+            GET /<domain>/events
+        """
+        limit = 100 if limit<0 or limit>300 else limit
+        # If domain is set use it else use domain from constructor
+        cp_domain = domain if domain else self.domain
+        url = "{base_url}/{domain}/events".format(base_url=self.base_url, domain=cp_domain)
+        # Optional prameters
+        params = {
+            "limit": limit
+        }
+        if begin:     params["begin"] = begin;
+        if end:       params["end"] = end;
+        if ascending: params["ascending"] = ascending;
+        for key, value in filter_fields.items():
+            if value is not None: params[key] = value;
+        reason, success, result = self.get(url, params=params)
+        deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_events")
         return deserialized, serialized
 
     # Stats
