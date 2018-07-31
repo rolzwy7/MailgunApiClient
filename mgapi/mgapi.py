@@ -21,16 +21,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# requests
+# Requests
 from requests.exceptions import ConnectionError
 from requests.exceptions import Timeout
 import requests
 
-# parsing and printing
+# Parsing and Printing
 import json
 import pprint as pp
 
-# Time and email
+# Time
 from email import utils
 import datetime
 import time
@@ -43,6 +43,8 @@ class MGApiConfiguration():
         self._DEBUG_SIGN = "[DEBUG]"
         self._API_USER = "api"
         self._REQUEST_TIMEOUT_SECONDS = 7
+
+
         self._EVENTS = [
             "accepted",
             "delivered",
@@ -64,6 +66,9 @@ class MGApiConfiguration():
 # Logging
 class MGApiLogging(MGApiConfiguration):
     def printer_print(self, sign, *argv):
+        """
+            Extended print
+        """
         dayname, month, daynum, hour, year = time.asctime().split(" ")
         to_print_time = " ".join([dayname, month, year, daynum, hour])
         print("[%s]" % to_print_time, sign, end=" ")
@@ -72,9 +77,15 @@ class MGApiLogging(MGApiConfiguration):
         print("")
 
     def print_debug(self, *argv):
+        """
+            Print if in debug mode ( _DEBUG == True )
+        """
         if self._DEBUG: self.printer_print("[DEBUG]", *argv)
 
     def print_debug_pretty(self, obj):
+        """
+            Print ( use pprint.pprint ) if in debug mode ( _DEBUG == True )
+        """
         if self._DEBUG: pp.pprint(obj)
 # Helper methods
 class MGApiUtils(MGApiLogging):
@@ -88,7 +99,7 @@ class MGApiUtils(MGApiLogging):
                 msg         - message
                 success     - indicator of success or failure
                 reason      - justification of error
-            returns
+            returns: (1 value/s)
                 json_object with added justification
         """
         json_object["justify"] = {
@@ -98,6 +109,20 @@ class MGApiUtils(MGApiLogging):
         }
         return json_object
     def not_in_justify(self, what, not_in, caller="<not_set>", reason="<not_set>", success=False):
+        """
+            summary:
+                returns justification if key isn't present in dict
+            params:
+                what - key name
+                not_in - dictionary
+                caller - caller method
+                reason - reason of error
+                success - indicator of success or failure
+            returns: (2 value/s)
+                deserialized and serialized json
+                    or
+                False ,False
+        """
         if what not in not_in:
             deserialized = {}
             deserialized = self.justify(
@@ -120,7 +145,7 @@ class MGApiUtils(MGApiLogging):
             sort_keys    - json.dumps param (see documentation)
             indent       - json.dumps param (see documentation)
             separators   - json.dumps param (see documentation)
-        returns:
+        returns: (1 value/s)
             serialized json (api response)
         """
         return json.dumps(json_object, sort_keys=sort_keys, indent=indent, separators=separators)
@@ -132,7 +157,7 @@ class MGApiUtils(MGApiLogging):
             Returns deserialized json (api response)
         params:
             json_string - json string (api response)
-        returns:
+        returns: (1 value/s)
             deserialized json (api response)
         """
         if not isinstance(json_string, str) and not isinstance(json_string, bytes):
@@ -147,25 +172,71 @@ class MGApiUtils(MGApiLogging):
         summary:
             Returns serialized and deserialized json_string (api response).
             Adds justification to response.
+            justification is always success=True with appropriate message
+
+            DON'T use this method for deserialization and serialization
+            of json object/json string instead use together:
+                serialize_json method
+                    and
+                deserialize_json method
         params:
             json_string - api response
-        returns:
-            Serialized and deserialized json_string (api response)
+        returns: (2 value/s)
+            Serialized and deserialized json (api response)
         """
         deserialized = self.deserialize_json(json_string=json_string)
-        # Add justification
+        # Add justification.
         deserialized = self.justify(deserialized, "Operation succeeded.")
         serialized   = self.serialize_json(deserialized)
         return deserialized, serialized
     # Options modifiers methods (Sending)
     def options_add_header(self, options, header, value):
+        """
+        docs:
+            https://documentation.mailgun.com/en/latest/api-sending.html#sending
+        summary:
+            adds new element to options dictionary
+        params:
+            options - dictionary
+            header - key
+            value - value
+        returns: (1 value/s)
+            dictionary (options param) with added new element
+        """
         options["h:{header}".format(header=header)] = value
         return options
     def options_add_variable(self, options, variable, value):
+        """
+        docs:
+            https://documentation.mailgun.com/en/latest/api-sending.html#sending
+        summary:
+            adds new element to options dictionary
+        params:
+            options - dictionary
+            header - key
+            value - value
+        returns: (1 value/s)
+            dictionary (variable param) with added new element
+        """
         options["v:{variable}".format(variable=variable)] = value
         return options
     # Time
     def nowRFC2822(self, days=0, hours=0, minutes=0, return_timestamp=False):
+        """
+        docs:
+            https://documentation.mailgun.com/en/latest/api-sending.html#sending
+        summary:
+            adds new element to options dictionary
+        params:
+            days - [integer] number of days
+            hours - [integer] number of days
+            minutes - [integer] number of days
+            return_timestamp - Bool
+        returns: (1 value/s or 2 value/s)
+            RFC2822 datetime
+                or
+            RFC2822 datetime and it's timestamp
+        """
         timedelta_shift = datetime.timedelta(days=days, hours=hours, minutes=minutes)
         now_datetime = datetime.datetime.now() + timedelta_shift
         now_timestamp = time.mktime(now_datetime.timetuple())
@@ -183,43 +254,70 @@ class MGApiRequests(MGApiUtils):
 
     # RequestExtended
     def requestEx(self, url, request_function, request_params):
-            """
-            """
-            timeout = self._REQUEST_TIMEOUT_SECONDS
-            request_params_common = {
-                "auth": (self.api_user, self.private_key),
-                "timeout": timeout
-            }
-            request_params = {**request_params, **request_params_common}
+        """
+        summary:
+            requests.request but with overkill exceptions and
+            option of choosing type of request
+        params:
+            url - URL of the api endpoint
+            request_function - method from one below:
+                                    self.get
+                                    self.post
+                                    self.put
+            request_params - parameters of chosen 'request_function'
+        returns: (3 value/s)
+            reason - reason for exception
+            success - indicator of success (Bool)
+            result - result of request
+        """
+        timeout = self._REQUEST_TIMEOUT_SECONDS
+        request_params_common = {
+            "auth": (self.api_user, self.private_key),
+            "timeout": timeout
+        }
+        request_params = {**request_params, **request_params_common}
 
-            reason = None
-            success = None
-            result = None
+        reason = None
+        success = None
+        result = None
 
-            try:
-                result = request_function(url, **request_params)
-                if result.status_code != 200:
-                    deserialized_content = self.deserialize_json(result.content)
-                    reason = "Status code:{status_code} | Message:{message} | Content:{content}".format(
-                        status_code=result.status_code,
-                        message=deserialized_content["message"] if "message" in deserialized_content.keys() else "KeyError",
-                        content=result.content
-                    )
-                    success, result = False, None
-                else:
-                    # operation succeeded
-                    reason, success, result = None, True, result
-            except Timeout as e:
-                reason, success, result = "Timeout: {exception}".format(exception=e), False, None
-            except ConnectionError as e:
-                reason, success, result = "ConnectionError: {exception}".format(exception=e), False, None
-            except Exception as e:
-                reason, success, result = "Unhandled Exception: {exception}".format(exception=e), False, None
+        try:
+            result = request_function(url, **request_params)
+            if result.status_code != 200:
+                deserialized_content = self.deserialize_json(result.content)
+                reason = "Status code:{status_code} | Message:{message} | Content:{content}".format(
+                    status_code=result.status_code,
+                    message=deserialized_content["message"] if "message" in deserialized_content.keys() else "KeyError",
+                    content=result.content
+                )
+                success, result = False, None
+            else:
+                # operation succeeded
+                reason, success, result = None, True, result
+        except Timeout as e:
+            reason, success, result = "Timeout: {exception}".format(exception=e), False, None
+        except ConnectionError as e:
+            reason, success, result = "ConnectionError: {exception}".format(exception=e), False, None
+        except Exception as e:
+            reason, success, result = "Unhandled Exception: {exception}".format(exception=e), False, None
 
-            return reason, success, result
+        return reason, success, result
 
     # Requests
     def get(self, url, params={}, **kwargs):
+        """
+        docs:
+            http://docs.python-requests.org/en/master/
+        summary:
+            Method used as requestEx method's parameter
+        params:
+            url - URL of the api endpoint
+            params - GET parameters
+        returns: (3 value/s)
+            reason - reason for exception
+            success - indicator of success (Bool)
+            result - result of request
+        """
         request_function = requests.get
         request_params = {
             "params": params,
@@ -229,6 +327,19 @@ class MGApiRequests(MGApiUtils):
         reason, success, result = self.requestEx(url, request_function, request_params)
         return reason, success, result
     def post(self, url, data={}, **kwargs):
+        """
+        docs:
+            http://docs.python-requests.org/en/master/
+        summary:
+            Method used as requestEx method's parameter
+        params:
+            url - URL of the api endpoint
+            data - POST data
+        returns: (3 value/s)
+            reason - reason for exception
+            success - indicator of success (Bool)
+            result - result of request
+        """
         request_function = requests.post
         request_params = {
             "data": data,
@@ -238,6 +349,19 @@ class MGApiRequests(MGApiUtils):
         reason, success, result = self.requestEx(url, request_function, request_params)
         return reason, success, result
     def put(self, url, data={}, **kwargs):
+        """
+        docs:
+            http://docs.python-requests.org/en/master/
+        summary:
+            Method used as requestEx method's parameter
+        params:
+            url - URL of the api endpoint
+            data - PUT data
+        returns: (3 value/s)
+            reason - reason for exception
+            success - indicator of success (Bool)
+            result - result of request
+        """
         request_function = requests.put
         request_params = {
             "data": data,
@@ -249,11 +373,20 @@ class MGApiRequests(MGApiUtils):
 
     def parseResponse(self, reason, success, result, caller=""):
         """
-        returns:
-            deserialized and serialized api result in JSON format
+        summary:
+            Judges if request was success by success parameter
+        params:
+            reason - reason for exception
+            success - indicator of success (Bool)
+            result - result of request
+            caller - caller method
+        returns: (2 value/s)
+            deserialized and serialized json
         """
         # Success
         if success:
+            # Calling self.to_json should only occur when request
+            # is considered to be success=True
             deserialized, serialized = self.to_json(result.content)
             return deserialized, serialized
         # Error
@@ -276,8 +409,18 @@ class Api(MGApiRequests):
 
     # Pagination
     def follow_pagination(self, deserialized_response):
+        """
+        summary:
+            Follows pagination until items array lenght is 0
+        params:
+            deserialized_response - deserialized json (api response)
+        returns: (3 value/s)
+            exhausted - indicates that there is no items left
+            deserialized - deserialized json
+            serialized - serialized json
+        """
         exhausted = False
-        # Check paging key
+        # Check if paging key exists
         deserialized, serialized = self.not_in_justify(
             "paging",
             deserialized_response.keys(),
@@ -287,7 +430,7 @@ class Api(MGApiRequests):
         )
         if deserialized and serialized:
             return exhausted, deserialized, serialized
-        # Check next key
+        # Check if next key exists
         deserialized, serialized = self.not_in_justify(
             "next",
             deserialized_response["paging"].keys(),
@@ -322,6 +465,19 @@ class Api(MGApiRequests):
 
     # Supressions (method used by get_bounces, get_unsubscribes and get_complaints)
     def get_supressions(self, get_what, address="", domain="", limit=100, caller="<not_set>"):
+        """
+        summary:
+            DRY for get_bounces, get_complaints and get_unsubscribes
+        params:
+            get_what - {bounces, complaints, unsubscribes}
+            address - email address
+            domain - domain name
+            limit - limit of items returned
+            caller - caller method
+        returns: (2 value/s)
+            deserialized - deserialized json
+            serialized - serialized json
+        """
         # Set default if invalid limit value
         if limit < 0 or limit > 10000: limit = 100;
         # If domain is set use it else use domain from constructor
@@ -434,6 +590,9 @@ class Api(MGApiRequests):
 
     # Events
     def ret_events_filter_fields(self):
+        """
+
+        """
         ret = {
             "event": None,
             "list": None,
@@ -515,6 +674,9 @@ class Api(MGApiRequests):
 
     # Sending
     def ret_additional_sending_options(self, tracking=True, testmode=False):
+        """
+            return additional sending option
+        """
         additional_options = {
             "cc": None,
             "bcc": None,
