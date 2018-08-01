@@ -97,7 +97,9 @@ For more information visit: [Mailgun API Reference][mailgunapiref]
 | GET /<domain>/events                              | get_events          |
 | GET /<domain>/stats/total                         | get_stats_total     |
 
-
+| Header One     | Header Two     |
+| :------------- | :------------- |
+| Item One       | Item Two       |
 
 [githubmy]: https://github.com/rolzwy7
 [mailgunhome]: https://www.mailgun.com/
