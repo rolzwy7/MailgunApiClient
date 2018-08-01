@@ -77,25 +77,26 @@ For more examples check out [examples][mgapiexamples] directory.
 ## Supported endpoints
 ---
 For more information visit: [Mailgun API Reference][mailgunapiref]
+
 | Endpoint                                          | Api Method          |
 | :-------------------------------------------------| :-------------------|
 | POST /lists                                       | add_list            |
-| POST /<domain>/messages                           | send_single_message |
-| POST /lists/<address>/members.json                | bulk_add_members    |
-| GET /domains/<domain>                             | get_domains         |
+| POST /{domain}/messages                           | send_single_message |
+| POST /lists/{address}/members.json                | bulk_add_members    |
+| GET /domains/{domain}                             | get_domains         |
 | GET /domains                                      | get_domains         |
-| GET /<domain>/bounces                             | get_bounces         |
-| GET /<domain>/bounces/<address>                   | get_bounces         |
-| GET /<domain>/unsubscribes                        | get_unsubscribes    |
-| GET /<domain>/unsubscribes/<address>              | get_unsubscribes    |
-| GET /<domain>/complaints                          | get_complaints      |
-| GET /<domain>/complaints/<address>                | get_complaints      |
-| GET /lists/<address>                              | get_lists           |
+| GET /{domain}/bounces                             | get_bounces         |
+| GET /{domain}/bounces/{address}                   | get_bounces         |
+| GET /{domain}/unsubscribes                        | get_unsubscribes    |
+| GET /{domain}/unsubscribes/{address}              | get_unsubscribes    |
+| GET /{domain}/complaints                          | get_complaints      |
+| GET /{domain}/complaints/{address}                | get_complaints      |
+| GET /lists/{address}                              | get_lists           |
 | GET /lists/pages                                  | get_lists           |
-| GET /lists/<address>/members/<member_address>     | get_members         |
-| GET /lists/<address>/members/pages                | get_members         |
-| GET /<domain>/events                              | get_events          |
-| GET /<domain>/stats/total                         | get_stats_total     |
+| GET /lists/{address}/members/{member_address}     | get_members         |
+| GET /lists/{address}/members/pages                | get_members         |
+| GET /{domain}/events                              | get_events          |
+| GET /{domain}/stats/total                         | get_stats_total     |
 
 | Header One     | Header Two     |
 | :------------- | :------------- |
