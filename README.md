@@ -1,7 +1,8 @@
 # Mailgun API Client
+---
 [Mailgun][mailgunhome] API client supporting sending and most GET endpoints for custom reporting.
-
 ## Usage
+---
 #### 1.) Creating object ( configuration )
 There are three ways of creating Api object
 ```python
@@ -54,11 +55,13 @@ deserialized, serialized = api.send_single_message(
 print(serialized)
 ```
 ## Deserialized & Serialized
+---
 All methods that serve API endpoints return two values:
 `deserialized` - deserialized JSON response (json object)
 `serialized` - serialized JSON response (json string)
 
 ## Justification
+---
 All request results come with additional key: `justify`
 ```python
 "justify": {
@@ -68,15 +71,17 @@ All request results come with additional key: `justify`
 }
 ```
 ## Examples
+---
 For more examples check out [examples][mgapiexamples] directory.
 
 ## Supported endpoints
+---
 For more information visit: [Mailgun API Reference][mailgunapiref]
 | Endpoint                                          | Api Method          |
 | :-------------------------------------------------| :-------------------|
 | POST /lists                                       | add_list            |
 | POST /<domain>/messages                           | send_single_message |
-|POST /lists/<address>/members.json                 | bulk_add_members    |
+| POST /lists/<address>/members.json                | bulk_add_members    |
 | GET /domains/<domain>                             | get_domains         |
 | GET /domains                                      | get_domains         |
 | GET /<domain>/bounces                             | get_bounces         |
