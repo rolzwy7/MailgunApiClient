@@ -39,12 +39,22 @@ import time
 class MGApiConfiguration():
 
     def __init__(self):
+        ### Debug configuration
         self._DEBUG = True
         self._DEBUG_SIGN = "[DEBUG]"
-        self._API_USER = "api"
-        self._REQUEST_TIMEOUT_SECONDS = 7
+        ### Api configuration
+        #  _BASE_URL : https://documentation.mailgun.com/en/latest/api-intro.html#base-url
+        self._BASE_URL    = "https://api.mailgun.net/v3"
+        # _DOMAIN : https://documentation.mailgun.com/en/latest/api-domains.html
+        self._DOMAIN      = ""
+        # _PRIVATE_KEY your private api key e.g: key-abcdefghijklmnopqrstuvwxyz012345
+        self._PRIVATE_KEY = ""
+        # Mailgun Api username (It's 'api' for everyone at the moment so
+        # you don't need to change this)
+        self._API_USER    = "api"
 
 
+        self._REQUEST_TIMEOUT_SECONDS = 15
         self._EVENTS = [
             "accepted",
             "delivered",
@@ -61,6 +71,9 @@ class MGApiConfiguration():
             "month"
         ]
     def printConfig(self):
+        """
+            Print current configuration
+        """
         print("[Mailgun API Client - Configuration]")
         print("Debug:", self._DEBUG)
 # Logging
@@ -69,9 +82,10 @@ class MGApiLogging(MGApiConfiguration):
         """
             Extended print
         """
-        dayname, month, daynum, hour, year = time.asctime().split(" ")
-        to_print_time = " ".join([dayname, month, year, daynum, hour])
-        print("[%s]" % to_print_time, sign, end=" ")
+        # print(time.asctime().split(" "))
+        # dayname, month, daynum, hour, year = time.asctime().split(" ")
+        # to_print_time = " ".join([dayname, month, year, daynum, hour])
+        print("[%s]" % time.asctime(), sign, end=" ")
         for e in argv:
             print(e, end=" ")
         print("")
@@ -400,12 +414,39 @@ class MGApiRequests(MGApiUtils):
         return deserialized, self.serialize_json(deserialized)
 # Api
 class Api(MGApiRequests):
-    def __init__(self, base_url, domain, private_key):
+    def __init__(self, domain="", api_user="", private_key="", base_url="", config_file=None, debug=None):
         MGApiConfiguration.__init__(self)
-        self.base_url    = base_url
-        self.domain      = domain
-        self.private_key = private_key
-        self.api_user    = self._API_USER
+        self._DEBUG = debug if debug is not None else self._DEBUG
+
+        if self._DEBUG: print(
+            "[DEBUG MODE IS ON] - you can change it in MGApiConfiguration class constructor"
+            );
+
+        # Config from parameters or config class
+        if config_file is None:
+            self.base_url    = base_url    if base_url    else self._BASE_URL
+            self.domain      = domain      if domain      else self._DOMAIN
+            self.private_key = private_key if private_key else self._PRIVATE_KEY
+            self.api_user    = api_user    if api_user    else self._API_USER
+        else:
+        # Config from config file
+            self.print_debug("Reading config file")
+            try:
+                with open(config_file, "rb") as config_content:
+                    config_json_serialized = config_content.read()
+            except FileNotFoundError as e:
+                print("FileNotFoundError: {exception}".format(exception=e))
+                exit(0)
+            except Exceptions as e:
+                print("Unhandled exception: {exception}".format(exception=e))
+                exit(0)
+            config_json_deserialized = self.deserialize_json(config_json_serialized)
+            self.print_debug("Config file JSON")
+            self.print_debug_pretty(config_json_deserialized)
+            self.api_user    = config_json_deserialized["api_user"]    if "api_user"    in config_json_deserialized.keys() else ""
+            self.domain      = config_json_deserialized["domain"]      if "domain"      in config_json_deserialized.keys() else ""
+            self.private_key = config_json_deserialized["private_key"] if "private_key" in config_json_deserialized.keys() else ""
+            self.base_url    = config_json_deserialized["base_url"]    if "base_url"    in config_json_deserialized.keys() else ""
 
     # Pagination
     def follow_pagination(self, deserialized_response):

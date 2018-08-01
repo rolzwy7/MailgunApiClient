@@ -1,0 +1,6 @@
+{
+    "base_url": "https://api.mailgun.net/v3",
+    "domain": "<your_domain>",
+    "private_key": "<your_private_api_key>",
+    "api_user": "api"
+}
