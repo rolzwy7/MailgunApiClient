@@ -492,7 +492,7 @@ class Api(MGApiRequests):
             self.base_url    = config_json_deserialized["base_url"]    if "base_url"    in config_json_deserialized.keys() else ""
 
     # Pagination
-    def follow_pagination(self, deserialized_response):
+    def follow_pagination(self, Next="", deserialized_response=""):
         """
         summary:
             Follows pagination until items array lenght is 0
@@ -504,28 +504,39 @@ class Api(MGApiRequests):
             serialized - serialized json
         """
         exhausted = False
-        # Check if paging key exists
-        deserialized, serialized = self.not_in_justify(
-            "paging",
-            deserialized_response.keys(),
-            caller="Api.follow_pagination",
-            reason="KeyError 'paging'",
-            success=False
-        )
-        if deserialized and serialized:
-            return exhausted, deserialized, serialized
-        # Check if next key exists
-        deserialized, serialized = self.not_in_justify(
-            "next",
-            deserialized_response["paging"].keys(),
-            caller="Api.follow_pagination",
-            reason="KeyError 'next' in paging",
-            success=False
-        )
-        if deserialized and serialized:
-            return exhausted, deserialized, serialized
 
-        url = deserialized_response["paging"]["next"]
+        if not Next and not deserialized_response:
+            return self.justify({},
+                "To follow pagination you need to provide at least one parameter",
+                success=False,
+                reason="'Next' and 'deserialized_response' is not set"
+                )
+
+        if deserialized_response and not Next:
+            # Check if paging key exists
+            deserialized, serialized = self.not_in_justify(
+                "paging",
+                deserialized_response.keys(),
+                caller="Api.follow_pagination",
+                reason="KeyError 'paging'",
+                success=False
+            )
+            if deserialized and serialized:
+                return exhausted, deserialized, serialized
+            # Check if next key exists
+            deserialized, serialized = self.not_in_justify(
+                "next",
+                deserialized_response["paging"].keys(),
+                caller="Api.follow_pagination",
+                reason="KeyError 'next' in paging",
+                success=False
+            )
+            if deserialized and serialized:
+                return exhausted, deserialized, serialized
+            url = deserialized_response["paging"]["next"]
+        else:
+            url = Next
+
         reason, success, result = self.get(url, params={})
         deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.follow_pagination")
 

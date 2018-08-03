@@ -1,4 +1,4 @@
-# Mailgun API Client
+# Mailgun API Client (Unittests needed)
 ---
 [Mailgun][mailgunhome] API client supporting sending and most GET endpoints for custom reporting.
 ## Usage

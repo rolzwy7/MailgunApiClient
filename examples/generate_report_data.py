@@ -3,13 +3,13 @@
     analytics data for single tag.
 """
 
+import pprint as pp
 try:
     from mgapi.mgapi import Api as MailgunApi
 except:
     print("Can't find mgapi module. ")
     exit(0)
 
-import pprint as pp
 
 def getReportData(tag):
     """
@@ -59,7 +59,7 @@ def getReportData(tag):
         tmp_array += des["items"]
         exhausted = False
         while not exhausted:
-            exhausted, des, ser = api.follow_pagination(des)
+            exhausted, des, ser = api.follow_pagination(Next=des["paging"]["next"])
             tmp_array += des["items"]
         ret["tag_events"][event] = tmp_array
 
