@@ -1,14 +1,12 @@
 """
     This example shows how to fetch data from mailgun api to generate json file with
     analytics data for single tag.
-
-
 """
 
 try:
     from mgapi.mgapi import Api as MailgunApi
 except:
-    print("Can't find mgapi module.")
+    print("Can't find mgapi module. ")
     exit(0)
 
 import pprint as pp

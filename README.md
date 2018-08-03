@@ -104,6 +104,9 @@ For more information visit: [Mailgun API Reference][mailgunapiref]
 | GET /<domain>/tags                                        | get_tags            |
 | GET /<domain>/tags/<tag>                                  | get_tags            |
 
+## Dependencies
+requests
+
 [githubmy]: https://github.com/rolzwy7
 [mailgunhome]: https://www.mailgun.com/
 [mailgunapiref]: https://documentation.mailgun.com/en/latest/api_reference.html
