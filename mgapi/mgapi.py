@@ -70,6 +70,12 @@ class MGApiConfiguration():
             "day",
             "month"
         ]
+        self._AGGREGATES = [
+            "countries",
+            "providers",
+            "devices"
+        ]
+
     def printConfig(self):
         """
             Print current configuration
@@ -669,11 +675,12 @@ class Api(MGApiRequests):
         deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_events")
         return deserialized, serialized
 
-    # Stats
+    # Total stats
     def get_stats_total(self, event, domain="", start="", end="", resolution="day", duration=""):
         """
             GET /<domain>/stats/total
         """
+        ### Copy paste - validation ( Event, Resolution ) ###
         # Check if event is valid
         deserialized, serialized = self.not_in_justify(
             event,
@@ -694,6 +701,7 @@ class Api(MGApiRequests):
             );
         if deserialized and serialized:
             return deserialized, serialized
+        ### Copy paste - validation ( Event, Resolution ) ###
 
         # If domain is set use it else use domain from constructor
         cp_domain = domain if domain else self.domain
@@ -701,16 +709,99 @@ class Api(MGApiRequests):
             "event": event,
             "resolution": resolution
         }
-        if start:
-            params["start"] = start
-        if end:
-            params["end"] = end
-        if duration:
-            params["duration"] = duration
-
+        if start:    params["start"]    = start;
+        if end:      params["end"]      = end;
+        if duration: params["duration"] = duration;
         url = "{base_url}/{domain}/stats/total".format(base_url=self.base_url, domain=cp_domain)
         reason, success, result = self.get(url, params=params)
         deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_stats_total")
+        return deserialized, serialized
+
+    # Tags
+    def get_tags(self, domain="", tag="", limit=100):
+        """
+            GET /<domain>/tags
+            GET /<domain>/tags/<tag>
+        """
+        cp_domain = domain if domain else self.domain
+        url = "{base_url}/{domain}/tags".format(base_url=self.base_url, domain=cp_domain)
+        url = "{url}/{tag}".format(url=url, tag=tag) if tag else url
+        params = {
+            "limit": limit
+        }
+        reason, success, result = self.get(url, params=params)
+        deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_tags")
+        return deserialized, serialized
+    def get_tag_stats(self, tag, event, domain="", start="", end="", resolution="day", duration=""):
+        """
+            GET /<domain>/tags/<tag>/stats
+        """
+        ### Copy paste - validation ( Event, Resolution ) ###
+        # Check if event is valid
+        deserialized, serialized = self.not_in_justify(
+            event,
+            self._EVENTS,
+            caller="Api.get_tag_stats",
+            reason="Event name is not valid: {event}".format(event=event),
+            success=False
+            );
+        if deserialized and serialized:
+            return deserialized, serialized
+        # Check if resolution is valid
+        deserialized, serialized = self.not_in_justify(
+            resolution,
+            self._RESOLUTIONS,
+            caller="Api.get_tag_stats",
+            reason="Resolution is not valid: {resolution}".format(resolution=resolution),
+            success=False
+            );
+        if deserialized and serialized:
+            return deserialized, serialized
+        ### Copy paste - validation ( Event, Resolution ) ###
+
+        cp_domain = domain if domain else self.domain
+        url = "{base_url}/{domain}/tags/{tag}/stats".format(base_url=self.base_url, domain=cp_domain, tag=tag)
+        params = {
+            "event": event,
+            "resolution": resolution
+        }
+        if start:    params["start"]    = start;
+        if end:      params["end"]      = end;
+        if duration: params["duration"] = duration;
+
+        reason, success, result = self.get(url, params=params)
+        deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_tag_stats")
+        return deserialized, serialized
+    def get_tag_aggregates(self, tag, aggregate, domain=""):
+        """
+            GET /<domain>/tags/<tag>/stats/aggregates/countries
+            GET /<domain>/tags/<tag>/stats/aggregates/providers
+            GET /<domain>/tags/<tag>/stats/aggregates/devices
+        """
+        ### Copy paste - validation ( Aggregate ) ###
+        # Check if aggregate is valid
+        deserialized, serialized = self.not_in_justify(
+            aggregate,
+            self._AGGREGATES,
+            caller="Api.get_tag_aggregates",
+            reason="Aggregate name is not valid: {aggregate}".format(aggregate=aggregate),
+            success=False
+            );
+        if deserialized and serialized:
+            return deserialized, serialized
+        ### Copy paste - validation ( Aggregate ) ###
+        cp_domain = domain if domain else self.domain
+        url = "{base_url}/{domain}/tags/{tag}/stats/aggregates/{aggregate}".format(
+            base_url=self.base_url,
+            domain=cp_domain,
+            tag=tag,
+            aggregate=aggregate
+        )
+        params = {
+
+        }
+        reason, success, result = self.get(url, params=params)
+        deserialized, serialized = self.parseResponse(reason, success, result, caller="Api.get_tag_aggregates")
         return deserialized, serialized
 
     # Sending

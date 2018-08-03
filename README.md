@@ -78,25 +78,31 @@ For more examples check out [examples][mgapiexamples] directory.
 ---
 For more information visit: [Mailgun API Reference][mailgunapiref]
 
-| Endpoint                                          | Api Method          |
-| :-------------------------------------------------| :-------------------|
-| POST /lists                                       | add_list            |
-| POST /{domain}/messages                           | send_single_message |
-| POST /lists/{address}/members.json                | bulk_add_members    |
-| GET /domains/{domain}                             | get_domains         |
-| GET /domains                                      | get_domains         |
-| GET /{domain}/bounces                             | get_bounces         |
-| GET /{domain}/bounces/{address}                   | get_bounces         |
-| GET /{domain}/unsubscribes                        | get_unsubscribes    |
-| GET /{domain}/unsubscribes/{address}              | get_unsubscribes    |
-| GET /{domain}/complaints                          | get_complaints      |
-| GET /{domain}/complaints/{address}                | get_complaints      |
-| GET /lists/{address}                              | get_lists           |
-| GET /lists/pages                                  | get_lists           |
-| GET /lists/{address}/members/{member_address}     | get_members         |
-| GET /lists/{address}/members/pages                | get_members         |
-| GET /{domain}/events                              | get_events          |
-| GET /{domain}/stats/total                         | get_stats_total     |
+| Endpoint                                                  | Api Method          |
+| :---------------------------------------------------------| :-------------------|
+| POST /lists                                               | add_list            |
+| POST /{domain}/messages                                   | send_single_message |
+| POST /lists/{address}/members.json                        | bulk_add_members    |
+| GET /domains/{domain}                                     | get_domains         |
+| GET /domains                                              | get_domains         |
+| GET /{domain}/bounces                                     | get_bounces         |
+| GET /{domain}/bounces/{address}                           | get_bounces         |
+| GET /{domain}/unsubscribes                                | get_unsubscribes    |
+| GET /{domain}/unsubscribes/{address}                      | get_unsubscribes    |
+| GET /{domain}/complaints                                  | get_complaints      |
+| GET /{domain}/complaints/{address}                        | get_complaints      |
+| GET /lists/{address}                                      | get_lists           |
+| GET /lists/pages                                          | get_lists           |
+| GET /lists/{address}/members/{member_address}             | get_members         |
+| GET /lists/{address}/members/pages                        | get_members         |
+| GET /{domain}/events                                      | get_events          |
+| GET /{domain}/stats/total                                 | get_stats_total     |
+| GET /<domain>/tags/<tag>/stats/aggregates/countries       | get_tag_aggregates  |
+| GET /<domain>/tags/<tag>/stats/aggregates/providers       | get_tag_aggregates  |
+| GET /<domain>/tags/<tag>/stats/aggregates/devices         | get_tag_aggregates  |
+| GET /<domain>/tags/<tag>/stats                            | get_tag_stats       |
+| GET /<domain>/tags                                        | get_tags            |
+| GET /<domain>/tags/<tag>                                  | get_tags            |
 
 [githubmy]: https://github.com/rolzwy7
 [mailgunhome]: https://www.mailgun.com/
