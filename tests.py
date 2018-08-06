@@ -1,7 +1,6 @@
 import unittest
 from mgapi.mgapi import Api as MailgunApi
 
-
 # Tests configuration - Start
 config_file           = "C:\\Users\\Account\\Desktop\\config.json"
 existing_domain       = "sandbox9f1a26d223824cbab4beeba8ff46a577.mailgun.org"
