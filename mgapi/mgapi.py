@@ -40,7 +40,7 @@ class MGApiConfiguration():
 
     def __init__(self):
         ### Debug configuration
-        self._DEBUG = True
+        self._DEBUG = False
         self._DEBUG_SIGN = "[DEBUG]"
         ### Api configuration
         #  _BASE_URL : https://documentation.mailgun.com/en/latest/api-intro.html#base-url
