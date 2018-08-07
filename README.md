@@ -110,4 +110,4 @@ requests
 [githubmy]: https://github.com/rolzwy7
 [mailgunhome]: https://www.mailgun.com/
 [mailgunapiref]: https://documentation.mailgun.com/en/latest/api_reference.html
-[mgapiexamples]: https://github.com/rolzwy7/MailgunApiClient/tree/master/contrib/examples
+[mgapiexamples]: https://github.com/rolzwy7/MailgunApiClient/tree/master/examples
