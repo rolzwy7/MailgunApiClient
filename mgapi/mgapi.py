@@ -82,7 +82,7 @@ class MGApiConfiguration():
         """
         print("[Mailgun API Client - Configuration]")
         print("Debug:", self._DEBUG)
-# Logging
+# Logging and printing
 class MGApiLogging(MGApiConfiguration):
     def printer_print(self, sign, *argv):
         """
