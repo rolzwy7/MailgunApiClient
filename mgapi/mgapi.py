@@ -1,7 +1,7 @@
 # @Author: Bartosz Nowakowski
 # @Github: https://github.com/rolzwy7
 #
-# Copyright (c) 2018
+# Copyright (c) 2018 Bartosz Nowakowski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
