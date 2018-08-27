@@ -97,12 +97,12 @@ For more information visit: [Mailgun API Reference][mailgunapiref]
 | GET /lists/{address}/members/pages                        | get_members         |
 | GET /{domain}/events                                      | get_events          |
 | GET /{domain}/stats/total                                 | get_stats_total     |
-| GET /<domain>/tags/<tag>/stats/aggregates/countries       | get_tag_aggregates  |
-| GET /<domain>/tags/<tag>/stats/aggregates/providers       | get_tag_aggregates  |
-| GET /<domain>/tags/<tag>/stats/aggregates/devices         | get_tag_aggregates  |
-| GET /<domain>/tags/<tag>/stats                            | get_tag_stats       |
-| GET /<domain>/tags                                        | get_tags            |
-| GET /<domain>/tags/<tag>                                  | get_tags            |
+| GET /{domain}/tags/{tag}/stats/aggregates/countries       | get_tag_aggregates  |
+| GET /{domain}/tags/{tag}/stats/aggregates/providers       | get_tag_aggregates  |
+| GET /{domain}/tags/{tag}/stats/aggregates/devices         | get_tag_aggregates  |
+| GET /{domain}/tags/{tag}/stats                            | get_tag_stats       |
+| GET /{domain}/tags                                        | get_tags            |
+| GET /{domain}/tags/{tag}                                  | get_tags            |
 
 
 [githubmy]: https://github.com/rolzwy7
