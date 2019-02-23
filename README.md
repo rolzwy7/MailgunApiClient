@@ -1,6 +1,8 @@
 # Mailgun API Client
 ---
-[Mailgun][mailgunhome] API client supporting sending and most GET endpoints for custom reporting.
+
+[Mailgun homepage][mailgunhome]
+
 ## Usage
 ---
 #### 1.) Creating object ( configuration )
@@ -57,7 +59,9 @@ print(serialized)
 ## Deserialized & Serialized
 ---
 All methods that serve API endpoints return two values:
+
 `deserialized` - deserialized JSON response (json object)
+
 `serialized` - serialized JSON response (json string)
 
 ## Justification
